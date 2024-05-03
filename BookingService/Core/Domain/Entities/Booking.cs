@@ -16,6 +16,8 @@ namespace Domain.Entities
             get { return Status; }
         }
 
+        public Booking() { Status = Status.Created; }
+
         public void ChangeState(Action action)
         {
             Status = (Status, action) switch
