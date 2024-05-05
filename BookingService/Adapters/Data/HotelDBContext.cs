@@ -1,4 +1,6 @@
-﻿using Domain.Entities;
+﻿using Data.Guest;
+using Data.Room;
+using ;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -7,9 +9,9 @@ namespace Data
     {
         public HotelDBContext(DbContextOptions<HotelDBContext> options) : base(options) { }
 
-        public virtual DbSet<Guest> Guests { get; set; }
-        public virtual DbSet<Room> Rooms { get; set; }
-        public virtual DbSet<Booking> Bookings { get; set; }
+        public virtual DbSet<Domain.Entities.Guest> Guests { get; set; }
+        public virtual DbSet<Domain.Entities.Room> Rooms { get; set; }
+        public virtual DbSet<Domain.Entities.Booking> Bookings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
