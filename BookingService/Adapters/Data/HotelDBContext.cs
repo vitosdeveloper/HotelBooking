@@ -1,6 +1,5 @@
 ﻿using Data.Guest;
 using Data.Room;
-using ;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
