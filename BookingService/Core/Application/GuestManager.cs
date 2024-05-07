@@ -45,6 +45,15 @@ namespace Application
                     Message = "Missing required information."
                 };
             }
+            catch (MissingFieldException e)
+            {
+                return new GuestResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCodes.MISSING_REQUIRED_INFORMATION,
+                    Message = "Missing required information."
+                };
+            }
             catch (InvalidEmailException e)
             {
                 return new GuestResponse

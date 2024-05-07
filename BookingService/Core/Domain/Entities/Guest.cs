@@ -20,7 +20,8 @@ namespace Domain.Entities
                 throw new InvalidPersonDocumentIdException();
             }
 
-            if (Name == null || Surname == null || Email == null)
+            if (Name == null || Surname == null || Email == null || string.IsNullOrEmpty(Name)
+                || string.IsNullOrEmpty(Surname) || string.IsNullOrEmpty(Email))
             {
                 throw new MissingFieldException();
             }
