@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.Entities;
+using Domain.Enums;
 using Entities = Domain.Entities;
 namespace Application.Guest.DTO
 {
@@ -23,6 +24,19 @@ namespace Application.Guest.DTO
                     IdNumber = guestDTO.IdNumber,
                     DocumentType = (DocumentType)guestDTO.IdTypeCode,
                 }
+            };
+        }
+
+        public static GuestDTO MapToDto(Entities.Guest guest)
+        {
+            return new GuestDTO
+            {
+                Id = guest.Id,
+                Name = guest.Name,
+                Surname = guest.Surname,
+                Email = guest.Email,
+                IdNumber = guest.DocumentId.IdNumber,
+                IdTypeCode = (int)guest.DocumentId.DocumentType
             };
         }
     }

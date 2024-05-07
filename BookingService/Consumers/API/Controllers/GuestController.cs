@@ -25,13 +25,21 @@ namespace API.Controllers
             var request = new CreateGuestRequest { Data = guest };
             var res = await _gestManager.CreateGuest(request);
             if (res.Success) return Created("", res.Data);
-            if (res.ErrorCode == ErrorCodes.NOT_FOUND) { return BadRequest(res); }
+            if (res.ErrorCode == ErrorCodes.NOT_FOUND) { return NotFound(res); }
             if (res.ErrorCode == ErrorCodes.INVALID_PERSON_ID) { return BadRequest(res); }
             if (res.ErrorCode == ErrorCodes.MISSING_REQUIRED_INFORMATION) { return BadRequest(res); }
             if (res.ErrorCode == ErrorCodes.INVALID_EMAIL) { return BadRequest(res); }
             if (res.ErrorCode == ErrorCodes.COULD_NOT_STORE_DATA) { return BadRequest(res); }
             _logger.LogError("Response with unknown ErrorCode Returned", res);
             return BadRequest(500);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<GuestDTO>> Get(int guestId)
+        {
+            var res = await _gestManager.GetGuest(guestId);
+            if (res.Success) return Created("", res.Data);
+            return NotFound(res);
         }
     }
 }

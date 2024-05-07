@@ -3,6 +3,7 @@ using Application.Guest.DTO;
 using Application.Guest.Requests;
 using Domain.Entities;
 using Domain.Ports;
+using Moq;
 
 namespace ApplicationTests
 {
@@ -102,6 +103,49 @@ namespace ApplicationTests
             Assert.False(res.Success);
             Assert.That(res.ErrorCode, Is.EqualTo(ErrorCodes.MISSING_REQUIRED_INFORMATION));
             Assert.That(res.Message, Is.EqualTo("Missing required information."));
+        }
+
+        [Test]
+        public async Task ShouldReturnGuestNotFoundWhenGuestDoesntExist()
+        {
+            var fakeRepo = new Mock<IGuestRepository>();
+            var fakeGuest = new Guest
+            {
+                Id = 333,
+                Name = "Test"
+            };
+            fakeRepo.Setup(x => x.Get(333)).Returns(Task.FromResult<Guest?>(null));
+            guestManager = new GuestManager(fakeRepo.Object);
+            var res = await guestManager.GetGuest(333);
+
+            Assert.IsNotNull(res);
+            Assert.False(res.Success);
+            Assert.AreEqual(res.ErrorCode, ErrorCodes.GUEST_NOT_FOUND);
+            Assert.AreEqual(res.Message, "No Guest record was found with the given Id");
+        }
+
+        [Test]
+        public async Task ShouldReturnGuestSuccess()
+        {
+            var fakeRepo = new Mock<IGuestRepository>();
+            var fakeGuest = new Guest
+            {
+                Id = 333,
+                Name = "Test",
+                DocumentId = new Domain.ValueObjects.PersonId
+                {
+                    DocumentType = Domain.Enums.DocumentType.DriveLicense,
+                    IdNumber = "123"
+                }
+            };
+            fakeRepo.Setup(x => x.Get(333)).Returns(Task.FromResult((Guest?)fakeGuest));
+            guestManager = new GuestManager(fakeRepo.Object);
+            var res = await guestManager.GetGuest(333);
+
+            Assert.IsNotNull(res);
+            Assert.True(res.Success);
+            Assert.AreEqual(res.Data.Id, fakeGuest.Id);
+            Assert.AreEqual(res.Data.Name, fakeGuest.Name);
         }
     }
 }
