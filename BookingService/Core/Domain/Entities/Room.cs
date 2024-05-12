@@ -12,6 +12,7 @@ namespace Domain.Entities
         public int Level { get; set; }
         public bool InMaintenance { get; set; }
         public Price Price { get; set; }
+        public ICollection<Booking> Bookings { get; set; }
         public bool IsAvailable
         {
             get
@@ -26,15 +27,28 @@ namespace Domain.Entities
 
         public bool HasGuest
         {
-            // verificar se existem bookings abertos pra essa room
-            get { return true; }
+            get
+            {
+                var notAvailableStatuses = new List<Enums.Status>()
+                {
+                    Enums.Status.Created,
+                    Enums.Status.Paid,
+                };
+                return Bookings.Where(
+                    b => b.Room.Id == Id &&
+                    notAvailableStatuses.Contains(b.CurrentStatus)).Count() > 0;
+            }
         }
 
         private void ValidateState()
         {
-            if (Name == null)
+            if (string.IsNullOrEmpty(Name))
             {
                 throw new InvalidRoomDataException();
+            }
+            if (Price == null || Price.Value < 10)
+            {
+                throw new InvalidRoomPriceException();
             }
         }
 
@@ -49,6 +63,24 @@ namespace Domain.Entities
             {
                 //edit
             }
+        }
+
+        public bool CanBeBooked()
+        {
+            try
+            {
+                ValidateState();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            if (!IsAvailable)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

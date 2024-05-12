@@ -16,6 +16,7 @@ namespace Data
         {
             modelBuilder.ApplyConfiguration(new GuestConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
+            modelBuilder.ApplyConfiguration(new RoomConfiguration());
         }
     }
 }

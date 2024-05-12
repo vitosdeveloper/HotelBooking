@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("controller")]
     [ApiController]
+    [Route("[controller]")]
     public class RoomController : ControllerBase
     {
         private readonly ILogger<GuestController> _logger;
@@ -28,10 +28,18 @@ namespace API.Controllers
             var request = new CreateRoomRequest { Data = room };
             var res = await _roomManager.CreateRoom(request);
             if (res.Success) return Created("", res.Data);
-            else if (res.ErrorCode == ErrorCodes.ROOM_MISSING_REQUIRED_INFORMATION) return BadRequest(res);
-            else if (res.ErrorCode == ErrorCodes.ROOM_COULD_NOT_STORE_DATA) return BadRequest(res);
+            else if (res.ErrorCode == ErrorCodes.BOOKING_MISSING_REQUIRED_INFORMATION) return BadRequest(res);
+            else if (res.ErrorCode == ErrorCodes.BOOKING_COULD_NOT_STORE_DATA) return BadRequest(res);
             _logger.LogError("Response with unknown ErrorCode Returned", res);
             return BadRequest(500);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<RoomDto>> Get(int roomId)
+        {
+            var res = await _roomManager.GetRoom(roomId);
+            if (res.Success) return Created("", res.Data);
+            return NotFound(res);
         }
     }
 }
