@@ -1,6 +1,8 @@
 ﻿using Application.Booking.DTO;
 using Application.Booking.Ports;
 using Application.Booking.Responses;
+using Application.Payment.Ports;
+using Application.Payment.Responses;
 using Domain.DomainExceptions;
 using Domain.Ports;
 
@@ -11,16 +13,19 @@ namespace Application.Booking
         private IGuestRepository _guestRepository;
         private IRoomRepository _roomRepository;
         private IBookingRepository _bookingRepository;
+        private IPaymentProcessorFactory _paymentProcessorFactory;
 
         public BookingManager(
             IGuestRepository guestRepository,
             IRoomRepository roomRepository,
-            IBookingRepository bookingRepository
+            IBookingRepository bookingRepository,
+            IPaymentProcessorFactory paymentProcessorFactory
             )
         {
             _guestRepository = guestRepository;
             _roomRepository = roomRepository;
             _bookingRepository = bookingRepository;
+            _paymentProcessorFactory = paymentProcessorFactory;
         }
 
         public async Task<BookingResponse> CreateBooking(BookingDto bookingDto)
@@ -102,8 +107,23 @@ namespace Application.Booking
                 };
             }
         }
+        public async Task<PaymentResponse> PayForABooking(PaymentRequestDto paymentRequestDto)
+        {
+            var paymentProcessor = _paymentProcessorFactory.GetPaymentProcessor(paymentRequestDto.SelectedPaymentProvider);
+            var response = await paymentProcessor.CapturePayment(paymentRequestDto.PaymentIntention);
+            if (response.Success)
+            {
+                return new PaymentResponse
+                {
+                    Success = true,
+                    Data = response.Data,
+                    Message = "Payment successfully processed"
+                };
+            }
+            return response;
+        }
 
-        public Task<BookingDto> GetBooking(int id)
+        public async Task<BookingResponse> GetBooking(int id)
         {
             throw new NotImplementedException();
         }
